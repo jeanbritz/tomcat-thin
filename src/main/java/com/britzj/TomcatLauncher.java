@@ -14,32 +14,35 @@ import org.apache.juli.logging.LogFactory;
 public class TomcatLauncher {
 
     private static final Log log = LogFactory.getLog(TomcatLauncher.class.getName());
-//    private static final Log log
+
     public static void main( String[] args ) {
         log.info( "Starting Tomcat Server" );
 
-        Tomcat tomcat = new Tomcat();
+        if(preChecks()) {
+            Tomcat tomcat = new Tomcat();
 
-        // Very important
-        tomcat.setBaseDir(TomcatPaths.getBasePath().toString());
+            // Very important
+            tomcat.setBaseDir(TomcatPaths.getBasePath().toString());
+            tomcat.setAddDefaultWebXmlToWebapp(false);
 
-        tomcat.setAddDefaultWebXmlToWebapp(true);
-
-        try {
-            Server server = tomcat.getServer();
-            tomcat.start();
-            server.await();
-        } catch (Exception e) {
-            log.error("Exeception occurred", e);
+            try {
+                Server server = tomcat.getServer();
+                tomcat.start();
+                server.await();
+            } catch (Exception e) {
+                log.error("Exception occurred", e);
+            }
         }
     }
 
     private static boolean preChecks() {
         if(!TomcatFiles.getGlobalWebXmlFile().exists()) {
             log.error("Global 'web.xml' could not be located at " + TomcatPaths.getConfPath());
+            return false;
         }
         if(!TomcatFiles.getTomcatYmlFile().exists()) {
             log.error("'tomcat.yml' could not be located at " + TomcatPaths.getConfPath());
+            return false;
         }
         return true;
     }
