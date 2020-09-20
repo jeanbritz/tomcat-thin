@@ -1,4 +1,5 @@
 server:
+  hostname: localhost
   port: 8080
   ssl:
     enabled: false
@@ -6,6 +7,6 @@ server:
 webapps:
   instances:
      default:
-       context: /helloworld
-       war: helloworld.war
+       context: /sample
+       warFile: sample.war
 

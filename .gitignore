@@ -2,5 +2,10 @@
 .idea
 *.iml
 
+# Working folders
+webapps
+tomcat.8080
+work
+
 # Maven files
 target

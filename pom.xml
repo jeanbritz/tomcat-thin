@@ -16,6 +16,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <tomcat.version>8.5.58</tomcat.version>
+    <snakeyaml.version>1.26</snakeyaml.version>
   </properties>
 
   <dependencies>
@@ -39,6 +40,13 @@
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-juli</artifactId>
       <version>${tomcat.version}</version>
+    </dependency>
+
+    <!-- Other dependencies -->
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>${snakeyaml.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
