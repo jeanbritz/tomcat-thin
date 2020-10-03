@@ -1,11 +1,13 @@
 package com.britzj;
 
 import com.britzj.config.ConfigProcessor;
+import com.britzj.config.ConnectorConfig;
 import com.britzj.config.TomcatConfig;
 import com.britzj.config.WebApp;
 import org.apache.catalina.Context;
 import org.apache.catalina.Server;
 import org.apache.catalina.Valve;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.JreMemoryLeakPreventionListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.ThreadLocalLeakPreventionListener;
@@ -17,6 +19,8 @@ import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class TomcatLauncher {
@@ -34,11 +38,15 @@ public class TomcatLauncher {
 
         TomcatConfig config = configProcessor.load();
         Tomcat tomcat = new Tomcat();
-        tomcat.setHostname(config.getServerConfig().getHostname());
-        tomcat.getHost().getPipeline().addValve(getErrorReportValve());
 
-        // Very important
-        tomcat.setBaseDir(TomcatPaths.getBasePath().toString());
+        // Creating Connectors
+        List<Connector> connectors = createConnectors(config.getConnectors());
+        connectors.forEach(tomcat::setConnector);
+        tomcat.setHostname(config.getServerConfig().getHostname());
+        tomcat.setPort(config.getServerConfig().getPort());
+        tomcat.getServer().setPort(-1); // Disable shutdown port
+        tomcat.getHost().getPipeline().addValve(createErrorReportValve());
+
         tomcat.setAddDefaultWebXmlToWebapp(false);
 
         for (Map.Entry<String, WebApp> apps : config.getWebApps().getInstances().entrySet()) {
@@ -54,6 +62,7 @@ public class TomcatLauncher {
         try {
             Server server = tomcat.getServer();
             tomcat.start();
+            log.info("Tomcat Started!");
             server.await();
         } catch (Exception e) {
             log.error("Exception occurred", e);
@@ -61,6 +70,10 @@ public class TomcatLauncher {
 
     }
 
+    /**
+     *
+     * @return
+     */
     private static boolean preChecks() {
         if(!TomcatFiles.getGlobalWebXmlFile().exists()) {
             log.error("Global 'web.xml' could not be located at " + TomcatPaths.getConfPath());
@@ -73,6 +86,10 @@ public class TomcatLauncher {
         return true;
     }
 
+    /**
+     *
+     * @param context
+     */
     private static void addDefaultListeners(Context context) {
         context.addLifecycleListener(new VersionLoggerListener());
         context.addLifecycleListener(new SecurityListener());
@@ -81,10 +98,30 @@ public class TomcatLauncher {
         context.addLifecycleListener(new ThreadLocalLeakPreventionListener());
     }
 
-    private static Valve getErrorReportValve() {
+    /**
+     *
+     * @return
+     */
+    private static Valve createErrorReportValve() {
         ErrorReportValve valve = new ErrorReportValve();
         valve.setShowReport(false);
         valve.setShowServerInfo(false);
         return valve;
+    }
+
+    /**
+     * Create Connector objects from the given config
+     * @param connectorConfig Config
+     * @return List of created Connectors
+     */
+    private static List<Connector> createConnectors(Map<String, ConnectorConfig> connectorConfig) {
+        List<Connector> connectors = new ArrayList<>();
+        for(Map.Entry<String, ConnectorConfig> entry : connectorConfig.entrySet()) {
+            log.info("Creating connector [" + entry.getKey() + "]");
+            Connector connector = new Connector(entry.getValue().getProtocol());
+            connector.setPort(entry.getValue().getPort());
+            connectors.add(connector);
+        }
+        return connectors;
     }
 }

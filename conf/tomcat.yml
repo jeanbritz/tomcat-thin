@@ -1,12 +1,18 @@
 server:
   hostname: localhost
-  port: 8080
-  ssl:
-    enabled: false
+
+connectors:
+  http:
+    protocol: HTTP/1.1
+    port: 8081
 
 webapps:
   instances:
-     default:
+     sample:
        context: /sample
        warFile: sample.war
+
+     chat:
+       context: /chat
+       warFile: chat.war
 
