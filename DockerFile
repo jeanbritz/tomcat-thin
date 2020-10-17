@@ -1,0 +1,23 @@
+FROM java:opejdk-8-jdk-alpine
+
+ENV CATALINA_HOME /usr/local/tomcat
+ENV PATH $CATALINA_HOME/bin:$PATH
+
+RUN mkdir -p $CATALINA_HOME \
+    && mkdir -p $CATALINA_HOME/bin \
+    && mkdir -p $CATALINA_HOME/conf \
+    && mkdir -p $CATALINA_HOME/webapps \
+    && adduser -D -h $CATALINA_HOME tomcat \
+    && addgroup -g tomcat
+
+COPY scripts/* /scripts/
+COPY bin/* $CATALINA_HOME/bin/
+COPY conf/* $CATALINA_HOME/conf/
+COPY target/tomcat-thin-jar-with-dependencies.jar $CATALINA_HOME/tomcat-thin.jar
+
+RUN chown -R tomcat:tomcat $CATALINA_HOME
+
+USER tomcat
+WORKDIR $CATALINA_HOME
+
+ENTRYPOINT ["/scripts/docker-entrypoint.sh"]

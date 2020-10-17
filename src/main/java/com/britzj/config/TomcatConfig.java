@@ -14,16 +14,8 @@ public class TomcatConfig {
     return server;
   }
 
-  public void setServerConfig(Server serverConfig) {
-    this.server = serverConfig;
-  }
-
   public WebApps getWebApps() {
     return webapps;
-  }
-
-  public void setWebApps(WebApps webApps) {
-    this.webapps = webApps;
   }
 
   public Map<String, ConnectorConfig> getConnectors() {

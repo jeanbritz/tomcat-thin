@@ -16,8 +16,4 @@ public class Server {
     return port;
   }
 
-  public SslConfig getSsl() {
-    return ssl;
-  }
-
 }

@@ -10,7 +10,7 @@ public class WebApps {
     return instances;
   }
 
-  public void setInstances(Map<String, WebApp> instances) {
-    this.instances = instances;
+  public void setInstances(Map<String, WebApp> instancesMap) {
+    this.instances = instancesMap;
   }
 }

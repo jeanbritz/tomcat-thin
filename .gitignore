@@ -4,8 +4,9 @@
 
 # Working folders
 webapps
-tomcat.8080
+tomcat.*
+logs
 work
 
-# Maven files
+# Maven folders
 target

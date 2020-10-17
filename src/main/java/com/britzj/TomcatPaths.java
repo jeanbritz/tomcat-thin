@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Common paths used with Tomcat
+ * Common paths used with Tomcat.
  */
 public class TomcatPaths {
 
@@ -12,12 +12,15 @@ public class TomcatPaths {
     // Forbid instance
   }
 
-  private static final String USER_DIR = System.getProperty("user.dir");
+  private static String USER_DIR = System.getProperty("catalina.home");
 
-  /**
-   *
-   * @return
-   */
+  static {
+    if(USER_DIR == null) {
+      USER_DIR = System.getProperty("user.dir");
+    }
+  }
+
+
   public static Path getBasePath() {
     return Paths.get(USER_DIR);
   }
@@ -29,6 +32,7 @@ public class TomcatPaths {
   public static Path getWebAppsPath() {
     return Paths.get(USER_DIR, "webapps");
   }
+
 
   /**
    *

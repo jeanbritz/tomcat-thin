@@ -13,6 +13,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.ThreadLocalLeakPreventionListener;
 import org.apache.catalina.mbeans.GlobalResourcesLifecycleListener;
 import org.apache.catalina.security.SecurityListener;
+import org.apache.catalina.startup.Bootstrap;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.VersionLoggerListener;
 import org.apache.catalina.valves.ErrorReportValve;
@@ -23,14 +24,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TomcatLauncher {
+/**
+ * Main class
+ * Launches the embedded version of Tomcat
+ */
+public class TomcatThinLauncher {
 
-    private static final Log log = LogFactory.getLog(TomcatLauncher.class.getName());
+    private static final Log log = LogFactory.getLog(TomcatThinLauncher.class.getName());
 
     public static void main( String[] args ) {
-        log.info( "Starting Tomcat Server" );
+        log.info("Starting Tomcat Server");
 
-        if(!preChecks()) {
+        if (!preChecks()) {
             System.exit(1);
         }
 
@@ -39,20 +44,21 @@ public class TomcatLauncher {
         TomcatConfig config = configProcessor.load();
         Tomcat tomcat = new Tomcat();
 
+        tomcat.setBaseDir(TomcatPaths.getBasePath().toString());
+        tomcat.setHostname(config.getServerConfig().getHostname());
+        tomcat.setPort(config.getServerConfig().getPort());
+        tomcat.getHost().getPipeline().addValve(createErrorReportValve());
+
         // Creating Connectors
         List<Connector> connectors = createConnectors(config.getConnectors());
         connectors.forEach(tomcat::setConnector);
-        tomcat.setHostname(config.getServerConfig().getHostname());
-        tomcat.setPort(config.getServerConfig().getPort());
-        tomcat.getServer().setPort(-1); // Disable shutdown port
-        tomcat.getHost().getPipeline().addValve(createErrorReportValve());
 
         tomcat.setAddDefaultWebXmlToWebapp(false);
 
         for (Map.Entry<String, WebApp> apps : config.getWebApps().getInstances().entrySet()) {
             WebApp webApp = apps.getValue();
             log.info(String.format("Registering %s web application at %s", apps.getKey(), webApp.getContext()));
-            StandardContext standardContext = (StandardContext) tomcat.addWebapp(webApp.getContext(),
+            StandardContext standardContext = (StandardContext) tomcat.addWebapp("/" + webApp.getContext(),
                     TomcatPaths.getWebAppsPath().resolve(webApp.getWarFile()).toString());
             standardContext.setDefaultContextXml(TomcatFiles.getGlobalContextXmlFile().getAbsolutePath());
             standardContext.setDefaultWebXml(TomcatFiles.getGlobalWebXmlFile().getAbsolutePath());
@@ -61,7 +67,10 @@ public class TomcatLauncher {
 
         try {
             Server server = tomcat.getServer();
+            server.setPort(-1); // Disable shutdown port
             tomcat.start();
+//            Bootstrap bootstrap = new Bootstrap();
+//            bootstrap.start();
             log.info("Tomcat Started!");
             server.await();
         } catch (Exception e) {

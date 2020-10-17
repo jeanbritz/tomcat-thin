@@ -11,7 +11,7 @@ public class TomcatFiles {
     // Forbid instance
   }
 
-  private static final String TOMCAT_YML = "tomcat.yml";
+  private static final String TOMCAT_YML = "tomcat-thin.yml";
   private static final String CONTEXT_XML = "context.xml";
   private static final String WEB_XML = "web.xml";
 

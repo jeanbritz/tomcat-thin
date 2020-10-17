@@ -9,15 +9,8 @@ public class SslConfig {
     return enabled;
   }
 
-  public void setEnabled(boolean enabled) {
-    this.enabled = enabled;
-  }
-
   public String getProtocol() {
     return protocol;
   }
 
-  public void setProtocol(String protocol) {
-    this.protocol = protocol;
-  }
 }

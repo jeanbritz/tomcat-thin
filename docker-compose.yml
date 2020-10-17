@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  tomcat:
+    build:
+      context: ./
+      dockerfile: DockerFile
+    image: tomcat-thin:latest
+    container_name: tomcat-thin-dev
+    ports:
+      - '8081:8081'
