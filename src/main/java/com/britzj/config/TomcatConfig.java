@@ -21,5 +21,4 @@ public class TomcatConfig {
   public Map<String, ConnectorConfig> getConnectors() {
     return connectors;
   }
-
 }
