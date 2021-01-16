@@ -1,7 +1,5 @@
 package com.britzj.config;
 
-import java.util.Map;
-
 public class Server {
 
   public String hostname = "localhost";

@@ -4,7 +4,7 @@ server:
 connectors:
   http:
     protocol: HTTP/1.1
-    port: 8080
+    port: 8082
     redirectPort: 8443
 
   https:
@@ -13,7 +13,7 @@ connectors:
     secure: true
     properties:
       keyAlias: "tomcat"
-      keystorePass: "tomcat"
+      keystorePass: !!vault keystore-pass
       keystoreType: "JKS"
       keystoreFile: "selfsigned.jks"
       sslProtocol: "TLSv1.2"

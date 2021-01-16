@@ -54,6 +54,11 @@
       <artifactId>snakeyaml</artifactId>
       <version>${snakeyaml.version}</version>
     </dependency>
+    <dependency>
+      <groupId>de.stklcode.jvault</groupId>
+      <artifactId>jvault-connector</artifactId>
+      <version>0.9.1</version>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>

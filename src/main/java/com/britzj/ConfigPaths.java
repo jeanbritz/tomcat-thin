@@ -6,9 +6,9 @@ import java.nio.file.Paths;
 /**
  * Common paths used with Tomcat.
  */
-public class TomcatPaths {
+public class ConfigPaths {
 
-  private TomcatPaths() {
+  private ConfigPaths() {
     // Forbid instance
   }
 

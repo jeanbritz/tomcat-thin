@@ -1,9 +1,6 @@
 package com.britzj;
 
-import com.britzj.config.ConfigProcessor;
-import com.britzj.config.ConnectorConfig;
-import com.britzj.config.TomcatConfig;
-import com.britzj.config.WebApp;
+import com.britzj.config.*;
 import org.apache.catalina.Context;
 import org.apache.catalina.Server;
 import org.apache.catalina.Valve;
@@ -40,10 +37,12 @@ public class TomcatThinLauncher {
 
     ConfigProcessor configProcessor = ConfigProcessor.getInstance();
 
-    TomcatConfig config = configProcessor.load();
+    HashicorpVaultConfig vaultConfig = configProcessor.loadVaultConfig();
+    TomcatConfig config = configProcessor.loadTomcatConfig(vaultConfig);
+
     Tomcat tomcat = new Tomcat();
 
-    tomcat.setBaseDir(TomcatPaths.getBasePath().toString());
+    tomcat.setBaseDir(ConfigPaths.getBasePath().toString());
     tomcat.setHostname(config.getServerConfig().getHostname());
     tomcat.setPort(config.getServerConfig().getPort());
     tomcat.getHost().getPipeline().addValve(createErrorReportValve());
@@ -58,9 +57,9 @@ public class TomcatThinLauncher {
       WebApp webApp = apps.getValue();
       log.info(String.format("Registering %s web application at %s", apps.getKey(), webApp.getContext()));
       StandardContext standardContext = (StandardContext) tomcat.addWebapp("/" + webApp.getContext(),
-              TomcatPaths.getWebAppsPath().resolve(webApp.getWarFile()).toString());
-      standardContext.setDefaultContextXml(TomcatFiles.getGlobalContextXmlFile().getAbsolutePath());
-      standardContext.setDefaultWebXml(TomcatFiles.getGlobalWebXmlFile().getAbsolutePath());
+              ConfigPaths.getWebAppsPath().resolve(webApp.getWarFile()).toString());
+      standardContext.setDefaultContextXml(ConfigFiles.getGlobalContextXmlFile().getAbsolutePath());
+      standardContext.setDefaultWebXml(ConfigFiles.getGlobalWebXmlFile().getAbsolutePath());
       addDefaultListeners(standardContext);
     }
 
@@ -80,12 +79,12 @@ public class TomcatThinLauncher {
    * @return
    */
   private static boolean preChecks() {
-    if (!TomcatFiles.getGlobalWebXmlFile().exists()) {
-      log.error("Global 'web.xml' could not be located at " + TomcatPaths.getConfPath());
+    if (!ConfigFiles.getGlobalWebXmlFile().exists()) {
+      log.error("Global 'web.xml' could not be located at " + ConfigPaths.getConfPath());
       return false;
     }
-    if (!TomcatFiles.getTomcatYmlFile().exists()) {
-      log.error("'tomcat.yml' could not be located at " + TomcatPaths.getConfPath());
+    if (!ConfigFiles.getTomcatYmlFile().exists()) {
+      log.error("'tomcat.yml' could not be located at " + ConfigPaths.getConfPath());
       return false;
     }
     return true;
