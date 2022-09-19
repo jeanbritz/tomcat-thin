@@ -16,7 +16,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <tomcat.version>9.0.62</tomcat.version>
-    <snakeyaml.version>1.30</snakeyaml.version>
+    <snakeyaml.version>1.32</snakeyaml.version>
   </properties>
 
   <dependencies>
